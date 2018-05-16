@@ -25,3 +25,8 @@
 /dist/
 /nbdist/
 /.nb-gradle/
+
+### FRONT ###
+/static/build/
+/static/node_modules/
+/static/bower_components/
