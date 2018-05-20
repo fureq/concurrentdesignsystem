@@ -1,0 +1,10 @@
+mongodb:
+  image: mongo
+  ports:
+    - "27017:27017"
+  container_name: concurrentdesignsystem_db
+
+mongo-seed:
+  build: ./mongo-seed
+  links:
+    - mongodb
