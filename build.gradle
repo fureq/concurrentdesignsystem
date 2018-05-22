@@ -28,6 +28,6 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter')
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.data:spring-data-mongodb')
-    compile('org.projectlombok:org.projectlombok')
+    compileOnly 'org.projectlombok:lombok:1.16.20'
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
