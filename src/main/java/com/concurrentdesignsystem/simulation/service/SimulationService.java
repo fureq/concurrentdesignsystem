@@ -22,14 +22,14 @@ public class SimulationService {
     public Node getSimulationNodeFromStep(int nodeId, int stepId) {
         return stepRepository.findByStepId(stepId)
                 .map(Step::getNodes)
-                .map(list -> list.get(nodeId-1))
+                .map(list -> list.get(nodeId - 1))
                 .orElseThrow(RuntimeException::new);
     }
 
     public ElementSolid getSimulationElementFromStep(int elementId, int stepId) {
         return stepRepository.findByStepId(stepId)
                 .map(Step::getElements)
-                .map(list -> list.get(elementId-1))
+                .map(list -> list.get(elementId - 1))
                 .orElseThrow(RuntimeException::new);
     }
 }

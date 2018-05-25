@@ -11,3 +11,9 @@ Each next time, you can just run your docker DB as usual, i.e.:
 ```bash
 docker start concurrentdesignsystem_db
 ```
+
+## Project start
+Start project using Gradle command:
+```bash
+./gradlew bootRun
+```
