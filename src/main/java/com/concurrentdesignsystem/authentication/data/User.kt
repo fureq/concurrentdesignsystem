@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 @Document(collection = "UserCollection")
 data class User(
-        @Id val id: String,
-        @Indexed val name: String,
-        val password: String?
+        @Id val id: String?,
+        val name: String,
+        val password: String
 )
