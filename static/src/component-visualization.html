@@ -1,0 +1,140 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="component-visualization">
+    <template>
+        <style include="shared-styles,iron-flex iron-flex-alignment">
+            :host {
+                display: block;
+
+                padding: 10px;
+            }
+
+            .container {
+                display: flex;
+                justify-content: space-around;
+                flex-direction: row;
+            }
+
+            #rendererArea {
+                background-color: #FFF;
+                width: 1000px;
+                height: 800px;
+                border: 1px solid black;
+            }
+
+            paper-button, paper-icon-button {
+                color: #fff3e0;
+                background-color: var(--app-primary-color);
+            }
+        </style>
+
+        <iron-ajax
+                auto
+                url="[[rootPath]]simulation/step/[[stepId]]"
+                handle-as="json"
+                on-response="onNewSimulationStep">
+
+        </iron-ajax>
+
+        <div class="">
+            <div class="container">
+                <paper-button raised>Heh</paper-button>
+                xd
+                <paper-button raised>Heh</paper-button>
+                <paper-icon-button raised icon="arrow"></paper-icon-button>
+            </div>
+            <div id="rendererArea"></div>
+        </div>
+
+    </template>
+    <script src="../node_modules/three/build/three.js"></script>
+    <script src="../node_modules/three/examples/js/controls/TrackballControls.js"></script>
+    <script src="./scripts/simulation-geometry-builder.js"></script>
+    <script>
+        class VisualizationComponent extends Polymer.Element {
+            constructor() {
+                super();
+                this.scene = new THREE.Scene();
+                this.renderer = new THREE.WebGLRenderer({antialias: true});
+                this.camera = null;
+                this.control = null;
+
+                //Polymer.RenderStatus.afterNextRender(this, this.prepareRenderer)
+            }
+
+            prepareRenderer(geometry) {
+                let container = this.$.rendererArea;
+                let width = container.offsetWidth;
+                let height = container.offsetHeight;
+                this.camera = new THREE.PerspectiveCamera(0.025, width / height, 1, 3500);
+                this.camera.position.z = 400;
+
+                let material = new THREE.MeshBasicMaterial({color: 0xAABB00, wireframe: true, wireframeLinewidth: 1});
+                let mesh = new THREE.Mesh(geometry, material);
+
+                this.scene.add(mesh);
+
+                this.renderer.setPixelRatio(window.devicePixelRatio);
+                this.renderer.setSize(width, height);
+
+                container.appendChild(this.renderer.domElement);
+
+                this.control = new THREE.TrackballControls(this.camera, this.renderer.domElement);
+                this.control.minDistance = 100.0;
+                this.control.maxDistance = 800.0;
+                this.control.dynamicDampingFactor = 0.1;
+
+                this.animate();
+            }
+
+            animate() {
+                requestAnimationFrame(this.animate.bind(this));
+
+                this.control.update();
+                //stats.update();
+                this.renderer.render(this.scene, this.camera);
+            }
+
+            static get is() {
+                return 'component-visualization';
+            }
+
+            static get properties() {
+                return {
+                    stepId: {
+                        type: String,
+                        value: "1"
+                    }
+                }
+            }
+
+            onNewSimulationStep(event) {
+                let simulationStep = event.detail.response;
+                window.step = simulationStep;
+                let geometry = new THREE.BufferGeometry();
+                let indices = [];
+                let vertices = [];
+                let idOf = (nodeId) => nodeId - 1;
+                simulationStep.nodes.forEach(node => {
+                    vertices.push(node.x, node.y, node.z);
+                });
+
+                simulationStep.elements.forEach(element => {
+                    indices.push(idOf(element.node1), idOf(element.node2), idOf(element.node4));
+                    indices.push(idOf(element.node2), idOf(element.node3), idOf(element.node4));
+                    indices.push(idOf(element.node5), idOf(element.node6), idOf(element.node8));
+                    indices.push(idOf(element.node6), idOf(element.node7), idOf(element.node8));
+                });
+                geometry.setIndex(indices);
+                geometry.addAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                this.prepareRenderer(geometry);
+            };
+        }
+
+        window.customElements.define(VisualizationComponent.is, VisualizationComponent);
+    </script>
+</dom-module>
