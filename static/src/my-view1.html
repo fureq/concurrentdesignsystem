@@ -10,6 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="component-visualization.html">
+<link rel="import" href="component-conversation.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view1">
@@ -20,12 +21,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                 padding: 10px;
             }
+            #wrapper {
+                display: flex;
+                justify-content: space-around;
+                flex-direction: row;
+            }
+
         </style>
 
         <div class="card">
             <div class="circle">1</div>
             <h1>Visualization</h1>
-            <component-visualization></component-visualization>
+            <div id="wrapper">
+                <component-visualization></component-visualization>
+                <component-conversation></component-conversation>
+            </div>
+
         </div>
     </template>
 
