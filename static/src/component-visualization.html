@@ -62,7 +62,7 @@
                 this.scene = new THREE.Scene();
                 this.scene.background = new THREE.Color(0xFFFFFF);
                 this.renderer = new THREE.WebGLRenderer({antialias: true});
-                this.simulationGeometry = null;
+                this.simulationMesh = null;
                 this.container = null;
                 this.camera = null;
                 this.control = null;
@@ -75,20 +75,10 @@
                 let width = this.container.clientWidth;
                 let height = this.container.clientHeight;
                 this.camera = new THREE.PerspectiveCamera(0.025, width / height, 1, 3500);
-                this.camera.position.z = 100;
-                this.camera.position.y = 300;
+                this.camera.position.z = 300;
 
                 let ambientLight = new THREE.AmbientLight(0x999999);
                 this.scene.add(ambientLight);
-
-                let light1 = new THREE.DirectionalLight(0x999999, 1);
-                light1.position.set(1, 1, 1);
-                this.scene.add(light1);
-
-                let light2 = new THREE.DirectionalLight(0x999999, 1.5);
-                light2.position.set(0, -1, 0);
-                this.scene.add(light2);
-
 
                 this.renderer.setPixelRatio(window.devicePixelRatio);
                 this.renderer.setSize(width, height);
@@ -113,21 +103,28 @@
             }
 
             updateGeometry(geometry) {
-                if (this.simulationGeometry) {
-                    this.scene.remove(this.simulationGeometry);
-                }
+                if (this.simulationMesh) {
+                    this.simulationMesh.geometry.dispose();
+                    this.simulationMesh.geometry = null;
+                    this.simulationMesh.material.dispose();
+                    this.simulationMesh.material = null;
 
-                this.simulationGeometry = geometry;
+                    this.scene.remove(this.simulationMesh);
+                    this.simulationMesh = null;
+                }
 
                 let material = new THREE.MeshPhongMaterial({
                     shininess: 80,
                     side: THREE.DoubleSide,
-                    vertexColors: THREE.VertexColors
+                    vertexColors: THREE.VertexColors,
+                    shading: THREE.SmoothShading
                 });
 
-                let mesh = new THREE.Mesh(this.simulationGeometry, material);
+                this.simulationMesh = new THREE.Mesh(geometry, material);
+                this.simulationMesh.position.set(-0.005, -0.04, 0);
+                this.simulationMesh.__dirtyPosition = true;
 
-                this.scene.add(mesh);
+                this.scene.add(this.simulationMesh);
             }
 
             onWindowResize() {
@@ -219,7 +216,7 @@
                 let maxTemp = 1500;
                 let minTemp = 20;
                 let ratio = temperature / (maxTemp - minTemp);
-                let r = (0x00 + ratio * 0xFF)  / 0xFF;
+                let r = (0x00 + ratio * 0xFF) / 0xFF;
                 let g = 0x00;
                 let b = (0xFF - ratio * 0xFF) / 0xFF;
                 return {r: r, g: g, b: b};

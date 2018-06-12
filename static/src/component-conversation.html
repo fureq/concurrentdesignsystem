@@ -1,0 +1,96 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/chat-window/chat-window.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="component-conversation">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+
+                padding: 10px;
+            }
+        </style>
+        <style is="custom-style">
+            chat-window.styled {
+                font-size: small;
+                --chat-messages-height: 800px;
+                --paper-input-container-input: {
+                    margin: 0 2px;
+                };
+                --chat-message-text: {
+                    background-color: #f0f0f0;
+                    padding: 6px 8px;
+                    margin: 4px 0;
+                    border-radius: 6px;
+                };
+                width: 100%;
+            }
+        </style>
+        <div>
+            <h2>Collaborators chat </h2>
+            <chat-window class="styled" author="me" single-line input-text="{{text}}" messages="[[messages]]"
+                         on-send="sendMsg"></chat-window>
+        </div>
+    </template>
+
+    <script>
+        class ConversationComponent extends Polymer.Element {
+
+            constructor() {
+                super();
+            }
+
+            static get is() {
+                return 'component-conversation';
+            }
+
+            static get properties() {
+                return {
+                    messages: {
+                        type: Array,
+                        value: [{author: 'you', text: 'dummy msg 1', created: Date.now() - (60 * 1000)},
+                            {author: 'me', text: 'dummy msg 2', created: Date.now() - (3 * 60 * 1000)},
+                            {author: 'you', text: 'dummy msg 3', created: Date.now() - (10 * 60 * 1000)},
+                            {author: 'you', text: 'dummy msg 4', created: Date.now() - (60 * 60 * 1000)},
+                            {author: 'me', text: 'dummy msg 5', created: Date.now() - (1.2 * 60 * 60 * 1000)},
+                            {author: 'me', text: 'dummy msg 6', created: Date.now() - (1.5 * 60 * 60 * 1000)},
+                            {author: 'you', text: 'dummy msg 7', created: Date.now() - (11.5 * 60 * 60 * 1000)},
+                            {author: 'me', text: 'dummy msg 8', created: Date.now() - (12 * 60 * 60 * 1000)},
+                            {author: 'you', text: 'dummy msg 9', created: Date.now() - (13 * 60 * 60 * 1000)},
+                            {author: 'me', text: 'dummy msg 10', created: Date.now() - (1.5 * 24 * 60 * 60 * 1000)},
+                            {author: 'you', text: 'dummy msg 11', created: Date.now() - (1.6 * 24 * 60 * 60 * 1000)},
+                            {author: 'me', text: 'dummy msg 12', created: Date.now() - (4 * 24 * 60 * 60 * 1000)},
+                            {author: 'me', text: 'dummy msg 13', created: Date.now() - (4.5 * 24 * 60 * 60 * 1000)},
+                            {author: 'you', text: 'dummy msg 14', created: Date.now() - (14 * 24 * 60 * 60 * 1000)},
+                            {author: 'me', text: 'dummy msg 15', created: Date.now() - (14.5 * 24 * 60 * 60 * 1000)},
+                        ].reverse()
+                    },
+                    author: {
+                        type: String,
+                        value: "me"
+                    },
+                    text: {
+                        type: String
+                    }
+                }
+            }
+
+            sendMsg(e, text) {
+                // For demo purposes
+                this.author = this.author === "me" ? "you" : "me";
+                let msg = {
+                    author: this.author,
+                    text: text,
+                    created: Date.now()
+                };
+                // console.log('sending...', msg);
+                this.push('messages', msg);
+                this.text = '';
+            };
+        }
+
+        window.customElements.define(ConversationComponent.is, ConversationComponent);
+    </script>
+</dom-module>
