@@ -35,12 +35,37 @@
         </div>
     </template>
 
+    <script src="../bower_components/sockjs-client/dist/sockjs.js"></script>
+    <script src="../bower_components/stomp-websocket/lib/stomp.js"></script>
     <script>
         class ConversationComponent extends Polymer.Element {
 
             constructor() {
                 super();
+                let socket = new SockJS('/ws');
+                this.stompClient = Stomp.over(socket);
+                this.stompClient.connect({}, (frame) => {
+                    console.log("Connected " + frame);
+                    this.subscribe();
+                });
             }
+
+            subscribe() {
+                this.stompClient.subscribe()
+            }
+
+            sendMsg(e, text) {
+                // For demo purposes
+                this.author = "me";
+                let msg = {
+                    author: this.author,
+                    text: text,
+                    created: Date.now()
+                };
+                // console.log('sending...', msg);
+                this.push('messages', msg);
+                this.text = '';
+            };
 
             static get is() {
                 return 'component-conversation';
@@ -50,21 +75,14 @@
                 return {
                     messages: {
                         type: Array,
-                        value: [{author: 'you', text: 'dummy msg 1', created: Date.now() - (60 * 1000)},
-                            {author: 'me', text: 'dummy msg 2', created: Date.now() - (3 * 60 * 1000)},
-                            {author: 'you', text: 'dummy msg 3', created: Date.now() - (10 * 60 * 1000)},
-                            {author: 'you', text: 'dummy msg 4', created: Date.now() - (60 * 60 * 1000)},
-                            {author: 'me', text: 'dummy msg 5', created: Date.now() - (1.2 * 60 * 60 * 1000)},
-                            {author: 'me', text: 'dummy msg 6', created: Date.now() - (1.5 * 60 * 60 * 1000)},
-                            {author: 'you', text: 'dummy msg 7', created: Date.now() - (11.5 * 60 * 60 * 1000)},
-                            {author: 'me', text: 'dummy msg 8', created: Date.now() - (12 * 60 * 60 * 1000)},
-                            {author: 'you', text: 'dummy msg 9', created: Date.now() - (13 * 60 * 60 * 1000)},
-                            {author: 'me', text: 'dummy msg 10', created: Date.now() - (1.5 * 24 * 60 * 60 * 1000)},
-                            {author: 'you', text: 'dummy msg 11', created: Date.now() - (1.6 * 24 * 60 * 60 * 1000)},
-                            {author: 'me', text: 'dummy msg 12', created: Date.now() - (4 * 24 * 60 * 60 * 1000)},
-                            {author: 'me', text: 'dummy msg 13', created: Date.now() - (4.5 * 24 * 60 * 60 * 1000)},
-                            {author: 'you', text: 'dummy msg 14', created: Date.now() - (14 * 24 * 60 * 60 * 1000)},
-                            {author: 'me', text: 'dummy msg 15', created: Date.now() - (14.5 * 24 * 60 * 60 * 1000)},
+                        value: [{author: 'you', text: 'test', created: Date.now() - (60 * 1000)},
+                            {author: 'me', text: 'cze szymon', created: Date.now() - (3 * 60 * 1000)},
+                            {author: 'you', text: 'elo', created: Date.now() - (10 * 60 * 1000)},
+                            {author: 'you', text: 'co tam?', created: Date.now() - (60 * 60 * 1000)},
+                            {author: 'me', text: 'asd', created: Date.now() - (1.2 * 60 * 60 * 1000)},
+                            {author: 'me', text: 'gegs', created: Date.now() - (4.5 * 24 * 60 * 60 * 1000)},
+                            {author: 'you', text: 'fsdfsd', created: Date.now() - (14 * 24 * 60 * 60 * 1000)},
+                            {author: 'me', text: 'test', created: Date.now() - (14.5 * 24 * 60 * 60 * 1000)},
                         ].reverse()
                     },
                     author: {
@@ -76,19 +94,6 @@
                     }
                 }
             }
-
-            sendMsg(e, text) {
-                // For demo purposes
-                this.author = this.author === "me" ? "you" : "me";
-                let msg = {
-                    author: this.author,
-                    text: text,
-                    created: Date.now()
-                };
-                // console.log('sending...', msg);
-                this.push('messages', msg);
-                this.text = '';
-            };
         }
 
         window.customElements.define(ConversationComponent.is, ConversationComponent);

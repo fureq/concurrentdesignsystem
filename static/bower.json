@@ -20,7 +20,9 @@
     "iron-icons": "polymerelements/iron-icons#^2.1.1",
     "paper-spinner": "polymerelements/paper-spinner#^2.1.0",
     "paper-input": "polymerelements/paper-input#^2.2.2",
-    "chat-window": "jifalops/chat-window#^0.6.1"
+    "chat-window": "jifalops/chat-window#^0.6.1",
+    "sockjs-client": "^1.1.5",
+    "stomp-websocket": "^2.3.4"
   },
   "resolutions": {
     "polymer": "^2.0.0"
